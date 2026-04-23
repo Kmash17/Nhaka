@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Family Heritage - Interactive family tree visualization tool for preserving your family history">
+<meta name="keywords" content="family tree, genealogy, heritage, family history, ancestry">
+<meta name="author" content="Family Heritage">
+<title>Family Heritage — Interactive Family Tree</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌳%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --bg2: #1a1814;
+    --bg3: #252320;
+    --card: #1f1d1a;
+    --gold: #c9a84c;
+    --gold2: #e8c87a;
+    --gold3: #8a6a28;
+    --text: #f0ead8;
+    --text2: #b8a882;
+    --text3: #7a6e58;
+    --border: #3a3428;
+    --border2: #4a4232;
+    --male: #3a5a8a;
+    --male2: #5a7aaa;
+    --female: #8a3a5a;
+    --female2: #aa5a7a;
+    --unknown: #4a4a3a;
+    --line: #c9a84c44;
+    --radius: 10px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-icon { font-size: 1.8rem; line-height: 1; }
+  .logo span { 
+    font-style: italic; 
+    color: var(--text2); 
+    font-size: 0.8rem; 
+    display: block; 
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .header-actions { 
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--text2);
+    border-radius: 8px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn:hover { background: var(--border); color: var(--text); border-color: var(--gold3); }
+  .btn.primary { background: var(--gold3); color: var(--gold2); border-color: var(--gold); }
+  .btn.primary:hover { background: var(--gold); color: var(--bg); }
+  .btn.danger { color: #e07070; border-color: #5a2020; }
+  .btn.danger:hover { background: #3a1010; color: #f09090; }
+  .btn.small { padding: 4px 8px; font-size: 11px; }
+
+  /* LAYOUT */
+  .app { display: flex; height: calc(100vh - 64px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 300px;
+    min-width: 260px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.25s;
+  }
+  .sidebar.collapsed { width: 0; min-width: 0; opacity: 0; }
+  .sidebar-header {
+    padding: 1.25rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--gold);
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+  .search-box {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    margin-bottom: 8px;
+  }
+  .search-box::placeholder { color: var(--text3); }
+  .search-box:focus { border-color: var(--gold3); }
+  .filter-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .filter-select {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 6px 8px;
+    color: var(--text2);
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+  }
+  .member-list { flex: 1; overflow-y: auto; padding: 0.75rem; }
+  .member-list::-webkit-scrollbar { width: 4px; }
+  .member-list::-webkit-scrollbar-track { background: transparent; }
+  .member-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  .member-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+  }
+  .member-item:hover { background: var(--bg3); }
+  .member-item.active { background: var(--bg3); border-color: var(--gold3); }
+  .member-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .member-avatar.male { background: var(--male); color: var(--male2); }
+  .member-avatar.female { background: var(--female); color: var(--female2); }
+  .member-avatar.unknown { background: var(--unknown); color: var(--text3); }
+  .member-info { flex: 1; min-width: 0; }
+  .member-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .member-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .stats-bar {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-val { font-size: 1.1rem; font-weight: 500; color: var(--gold); font-family: 'Playfair Display', serif; }
+  .stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* TREE CANVAS */
+  .tree-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(201,168,76,0.03) 0%, transparent 50%);
+  }
+  .tree-controls {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 10;
+  }
+  .tree-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--text3);
+    pointer-events: none;
+    text-align: center;
+    background: rgba(15,14,12,0.7);
+    padding: 6px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+  }
+  #treeCanvas {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+  }
+  #treeCanvas.dragging { cursor: grabbing; }
+  #treeCanvas.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .empty-msg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+  }
+  .empty-msg .icon { font-size: 4rem; margin-bottom: 16px; color: var(--gold3); }
+  .empty-msg h3 { font-family: 'Playfair Display', serif; color: var(--gold); font-weight: 400; font-size: 1.5rem; margin-bottom: 8px; }
+  .empty-msg p { color: var(--text3); font-size: 14px; line-height: 1.6; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 540px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+    animation: modalSlideIn 0.2s ease-out;
+  }
+  @keyframes modalSlideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .modal-header {
+    padding: 1.25rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--gold);
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+    transition: color 0.15s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 1.5rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 11px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .form-control {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .form-control:focus { border-color: var(--gold3); }
+  .form-control option { background: var(--bg2); }
+  .form-divider {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 1.25rem 0 0.75rem;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  /* DETAIL PANEL */
+  .detail-panel {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 300px;
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    z-index: 50;
+    display: none;
+    animation: panelSlideIn 0.2s ease-out;
+  }
+  @keyframes panelSlideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .detail-panel.visible { display: block; }
+  .detail-top {
+    padding: 1.25rem;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .detail-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text); font-weight: 600; line-height: 1.2; }
+  .detail-role { font-size: 12px; color: var(--gold); margin-top: 3px; }
+  .detail-body { padding: 1rem 1.25rem; max-height: 300px; overflow-y: auto; }
+  .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; }
+  .detail-row .lbl { color: var(--text3); min-width: 80px; }
+  .detail-row .val { color: var(--text2); text-align: right; max-width: 60%; word-break: break-word; }
+  .detail-actions { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border); display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* NODE TOOLTIP */
+  .node-tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--text);
+    z-index: 30;
+    display: none;
+    box-shadow: var(--shadow);
+    white-space: nowrap;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--bg2);
+    border: 1px solid var(--gold3);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 13px;
+    color: var(--gold2);
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.25s;
+    pointer-events: none;
+    box-shadow: var(--shadow);
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* LEGEND */
+  .legend {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 11px;
+    color: var(--text3);
+    z-index: 10;
+  }
+  .legend-title { color: var(--text2); font-weight: 500; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .legend-row { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    header { padding: 0 1rem; }
+    .logo span { display: none; }
+    .header-actions { gap: 5px; }
+    .btn { padding: 5px 10px; font-size: 11px; }
+    .sidebar { position: absolute; left: 0; top: 64px; bottom: 0; z-index: 60; }
+    .sidebar.collapsed { transform: translateX(-100%); width: 300px; min-width: 300px; opacity: 1; }
+    .form-row { grid-template-columns: 1fr; }
+    .detail-panel { width: 260px; }
+    .tree-hint { font-size: 10px; padding: 4px 12px; }
+  }
+
+  /* IMPORT DRAG AREA */
+  .import-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,14,12,0.95);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .import-overlay.hidden { display: none; }
+  .import-area {
+    border: 2px dashed var(--gold3);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    color: var(--text2);
+  }
+  .import-area.drag-over { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <span class="logo-icon">🌳</span>
+    <div>
+      Family Heritage
+      <span>Your Living Chronicle</span>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn" id="toggleSidebar" title="Toggle member list">☰ Members</button>
+    <button class="btn" id="centerBtn" title="Center tree">⊙ Centre</button>
+    <button class="btn primary" id="addRootBtn" title="Add new family member">+ Add</button>
+    <button class="btn" id="exportBtn" title="Export tree data">↓ Export</button>
+    <button class="btn" id="importBtn" title="Import tree data">↑ Import</button>
+    <button class="btn" id="loadSampleBtn" title="Load sample family">📋 Sample</button>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>Family Members</h2>
+      <input type="text" class="search-box" id="searchBox" placeholder="Search by name…">
+      <div class="filter-group">
+        <select class="filter-select" id="filterGender">
+          <option value="all">All Genders</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="unknown">Other</option>
+        </select>
+        <select class="filter-select" id="filterStatus">
+          <option value="all">All Status</option>
+          <option value="living">Living</option>
+          <option value="deceased">Deceased</option>
+        </select>
+      </div>
+    </div>
+    <div class="member-list" id="memberList"></div>
+    <div class="stats-bar" id="statsBar">
+      <div class="stat"><div class="stat-val" id="statTotal">0</div><div class="stat-label">Total</div></div>
+      <div class="stat"><div class="stat-val" id="statGen">0</div><div class="stat-label">Generations</div></div>
+      <div class="stat"><div class="stat-val" id="statMale">0</div><div class="stat-label">Male</div></div>
+      <div class="stat"><div class="stat-val" id="statFemale">0</div><div class="stat-label">Female</div></div>
+    </div>
+  </aside>
+
+  <!-- TREE CANVAS -->
+  <div class="tree-area">
+    <div id="emptyState" class="empty-msg">
+      <div class="icon">🌳</div>
+      <h3>Your Family Tree Awaits</h3>
+      <p>Click <strong style="color:var(--gold)">+ Add</strong> to begin your journey,<br>or load the sample to explore.</p>
+    </div>
+    <svg id="treeCanvas"></svg>
+    <div class="tree-controls">
+      <button class="btn" id="zoomIn" title="Zoom in (or scroll)">+</button>
+      <button class="btn" id="zoomOut" title="Zoom out (or scroll)">−</button>
+      <button class="btn" id="resetView" title="Reset view">⟲</button>
+    </div>
+    <div class="tree-hint" id="treeHint">
+      <span>🖱️ Scroll to zoom · Drag to pan · Click node for details</span>
+      <span style="margin-left:12px">⌘N new member · ESC close</span>
+    </div>
+    <div class="legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#3a5a8a"></div>Male</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#8a3a5a"></div>Female</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#4a4a3a"></div>Other</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#c9a84c; border-radius:2px; width:18px; height:3px;"></div>Marriage</div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-top">
+    <div class="detail-avatar" id="dAvatar"></div>
+    <div>
+      <div class="detail-name" id="dName"></div>
+      <div class="detail-role" id="dRole"></div>
+    </div>
+  </div>
+  <div class="detail-body" id="dBody"></div>
+  <div class="detail-actions">
+    <button class="btn small" id="dEdit">✎ Edit</button>
+    <button class="btn small primary" id="dAddChild">+ Child</button>
+    <button class="btn small primary" id="dAddSpouse">+ Spouse</button>
+    <button class="btn small danger" id="dDelete">✕ Delete</button>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div class="node-tooltip" id="tooltip"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- IMPORT OVERLAY -->
+<div class="import-overlay hidden" id="importOverlay">
+  <div class="import-area" id="importArea">
+    <div style="font-size:3rem;margin-bottom:1rem">📁</div>
+    <h3 style="color:var(--gold);margin-bottom:0.5rem;font-family:'Playfair Display',serif">Import Family Tree</h3>
+    <p style="color:var(--text3);margin-bottom:1.5rem">Drag & drop a JSON file or click to browse</p>
+    <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+    <button class="btn primary" id="browseBtn">Choose File</button>
+    <button class="btn" id="cancelImport" style="margin-left:10px">Cancel</button>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay hidden" id="memberModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add Family Member</h2>
+      <button class="modal-close" id="closeModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name *</label>
+          <input type="text" class="form-control" id="fFirstName" placeholder="e.g. John" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" class="form-control" id="fLastName" placeholder="e.g. Mashozhera" autocomplete="off">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Gender</label>
+          <select class="form-control" id="fGender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="unknown">Prefer not to say</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Birth Year</label>
+          <input type="number" class="form-control" id="fBirth" placeholder="e.g. 1950" min="1700" max="2030">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Death Year</label>
+          <input type="number" class="form-control" id="fDeath" placeholder="Leave blank if living" min="1700" max="2030">
+        </div>
+        <div class="form-group">
+          <label>Place of Birth</label>
+          <input type="text" class="form-control" id="fBirthplace" placeholder="e.g. Harare, Zimbabwe">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Occupation / Role</label>
+          <input type="text" class="form-control" id="fOccupation" placeholder="e.g. Farmer, Teacher, Engineer">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Notes / Story</label>
+          <textarea class="form-control" id="fNotes" rows="3" placeholder="Share memories, achievements, or family stories…" style="resize:vertical"></textarea>
+        </div>
+      </div>
+      <div id="relationSection">
+        <div class="form-divider">Relationship</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Relationship Type</label>
+            <select class="form-control" id="fRelType">
+              <option value="child">Child of</option>
+              <option value="spouse">Spouse of</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Related To</label>
+            <select class="form-control" id="fRelTarget"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="cancelModal">Cancel</button>
+      <button class="btn primary" id="saveMember">Save Member</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let members = JSON.parse(localStorage.getItem('familyTreeMembers') || '[]');
+let relations = JSON.parse(localStorage.getItem('familyTreeRelations') || '[]');
+let selectedId = null;
+let modalMode = 'add';
+let editingId = null;
+let pendingRelType = null;
+let pendingRelTarget = null;
+
+// Pan/Zoom
+let svgPan = { x: 0, y: 0 };
+let svgScale = 1;
+let isPanning = false;
+let panStart = { x: 0, y: 0 };
+let panOrigin = { x: 0, y: 0 };
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 9); }
+function save() {
+  localStorage.setItem('familyTreeMembers', JSON.stringify(members));
+  localStorage.setItem('familyTreeRelations', JSON.stringify(relations));
+}
+function initials(m) {
+  return ((m.firstName||'?')[0] + (m.lastName||'')[0] || '').toUpperCase() || '?';
+}
+function fullName(m) { return [m.firstName, m.lastName].filter(Boolean).join(' ') || 'Unnamed'; }
+function lifespan(m) {
+  if (m.birthYear && m.deathYear) return `${m.birthYear} – ${m.deathYear}`;
+  if (m.birthYear) return `b. ${m.birthYear}`;
+  if (m.deathYear) return `d. ${m.deathYear}`;
+  return '';
+}
+function isDeceased(m) { return !!m.deathYear; }
+function genderColor(g) {
+  if (g === 'male') return '#3a5a8a';
+  if (g === 'female') return '#8a3a5a';
+  return '#4a4a3a';
+}
+function genderColorLight(g) {
+  if (g === 'male') return '#5a7aaa';
+  if (g === 'female') return '#aa5a7a';
+  return '#7a7a6a';
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── TREE LAYOUT ─────────────────────────────────────────────────────────────
+const NODE_W = 140, NODE_H = 72, H_GAP = 50, V_GAP = 90;
+
+function buildTree() {
+  const childIds = new Set(relations.filter(r=>r.type==='child').map(r=>r.childId));
+  const roots = members.filter(m => !childIds.has(m.id));
+
+  const childrenOf = {};
+  const spousesOf = {};
+  members.forEach(m => { childrenOf[m.id] = []; spousesOf[m.id] = []; });
+  relations.forEach(r => {
+    if (r.type === 'child') {
+      if (childrenOf[r.parentId]) childrenOf[r.parentId].push(r.childId);
+    }
+    if (r.type === 'spouse') {
+      if (spousesOf[r.id1]) spousesOf[r.id1].push(r.id2);
+      if (spousesOf[r.id2]) spousesOf[r.id2].push(r.id1);
+    }
+  });
+
+  const pos = {};
+  const visited = new Set();
+
+  function layout(id, depth, x) {
+    if (visited.has(id)) return x;
+    visited.add(id);
+    const children = childrenOf[id] || [];
+    const spouses = (spousesOf[id] || []).filter(sid => !visited.has(sid));
+
+    let myX = x;
+    if (children.length === 0 && spouses.length === 0) {
+      pos[id] = { x: myX, y: depth * (NODE_H + V_GAP) };
+      return myX + NODE_W + H_GAP;
+    }
+
+    let childX = x;
+    let allChildren = [...children];
+    spouses.forEach(sid => {
+      visited.add(sid);
+      const spouseChildren = (childrenOf[sid] || []).filter(c => !allChildren.includes(c));
+      allChildren = [...allChildren, ...spouseChildren];
+    });
+
+    if (allChildren.length > 0) {
+      allChildren.forEach(cid => {
+        childX = layout(cid, depth + 1, childX);
+      });
+      const childPositions = allChildren.map(c => pos[c]?.x).filter(x=>x!==undefined);
+      if (childPositions.length > 0) {
+        myX = (Math.min(...childPositions) + Math.max(...childPositions)) / 2;
+      }
+    } else {
+      myX = x;
+      childX = x + NODE_W + H_GAP;
+    }
+
+    pos[id] = { x: myX, y: depth * (NODE_H + V_GAP) };
+
+    spouses.forEach((sid, i) => {
+      pos[sid] = { x: myX + (NODE_W + H_GAP) * (i + 1), y: depth * (NODE_H + V_GAP) };
+    });
+
+    return Math.max(childX, myX + (spouses.length + 1) * (NODE_W + H_GAP));
+  }
+
+  let startX = 40;
+  roots.forEach(r => {
+    startX = layout(r.id, 0, startX);
+    startX += H_GAP;
+  });
+
+  members.forEach(m => {
+    if (!pos[m.id]) {
+      pos[m.id] = { x: startX, y: 0 };
+      startX += NODE_W
