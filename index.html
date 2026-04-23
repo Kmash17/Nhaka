@@ -2,512 +2,1079 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Family Heritage - Interactive family tree visualization tool for preserving your family history">
-<meta name="keywords" content="family tree, genealogy, heritage, family history, ancestry">
-<meta name="author" content="Family Heritage">
-<title>Family Heritage — Interactive Family Tree</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌳%3C/text%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Family Heritage - A beautifully crafted interactive family tree visualization tool for preserving and exploring your ancestral legacy">
+<meta name="theme-color" content="#0f0e0c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Family Heritage • Interactive Family Tree</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
+  /* Modern CSS Reset & Variables */
   :root {
-    --bg: #0f0e0c;
-    --bg2: #1a1814;
-    --bg3: #252320;
-    --card: #1f1d1a;
-    --gold: #c9a84c;
-    --gold2: #e8c87a;
-    --gold3: #8a6a28;
-    --text: #f0ead8;
-    --text2: #b8a882;
-    --text3: #7a6e58;
-    --border: #3a3428;
-    --border2: #4a4232;
-    --male: #3a5a8a;
-    --male2: #5a7aaa;
-    --female: #8a3a5a;
-    --female2: #aa5a7a;
-    --unknown: #4a4a3a;
-    --line: #c9a84c44;
-    --radius: 10px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.5);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
+    --bg-primary: #0a0908;
+    --bg-secondary: #11100e;
+    --bg-tertiary: #1a1815;
+    --bg-card: #1c1a16;
+    --bg-card-hover: #24211c;
+    --gold-primary: #d4af37;
+    --gold-light: #f4d03f;
+    --gold-dark: #9a7b1c;
+    --gold-soft: rgba(212, 175, 55, 0.15);
+    --text-primary: #f5f0e8;
+    --text-secondary: #c4b8a7;
+    --text-muted: #8a8178;
+    --border-subtle: rgba(212, 175, 55, 0.12);
+    --border-medium: rgba(212, 175, 55, 0.25);
+    --male-color: #4a7c9b;
+    --male-light: #6ba3c7;
+    --female-color: #9b4a6e;
+    --female-light: #c76b93;
+    --unknown-color: #6b6b5e;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+    --shadow-gold: 0 4px 12px rgba(212, 175, 55, 0.15);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --font-serif: 'Cormorant Garamond', serif;
+    --font-sans: 'Inter', sans-serif;
   }
 
-  /* HEADER */
-  header {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Elegant Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold-primary); }
+
+  /* Header - Refined */
+  .app-header {
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, rgba(17, 16, 14, 0.98) 100%);
+    border-bottom: 1px solid var(--border-subtle);
     padding: 0 2rem;
-    height: 64px;
+    height: 72px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 100;
+    backdrop-filter: blur(10px);
   }
-  .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    color: var(--gold);
-    letter-spacing: 0.02em;
+
+  .logo-wrapper {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 14px;
   }
-  .logo-icon { font-size: 1.8rem; line-height: 1; }
-  .logo span { 
-    font-style: italic; 
-    color: var(--text2); 
-    font-size: 0.8rem; 
-    display: block; 
-    font-family: 'DM Sans', sans-serif;
-    letter-spacing: 0.05em;
+
+  .logo-icon {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--gold-soft), transparent);
+    border: 1.5px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: var(--shadow-gold);
   }
-  .header-actions { 
-    display: flex; 
-    gap: 10px; 
-    align-items: center; 
-    flex-wrap: wrap;
+
+  .logo-text {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--gold-primary);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
   }
+
+  .logo-subtext {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* Modern Button System */
   .btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
     font-weight: 500;
-    border: 1px solid var(--border2);
-    background: var(--bg3);
-    color: var(--text2);
-    border-radius: 8px;
-    padding: 7px 14px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
     cursor: pointer;
-    transition: all 0.18s;
-    white-space: nowrap;
+    transition: all var(--transition-fast);
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    backdrop-filter: blur(5px);
   }
-  .btn:hover { background: var(--border); color: var(--text); border-color: var(--gold3); }
-  .btn.primary { background: var(--gold3); color: var(--gold2); border-color: var(--gold); }
-  .btn.primary:hover { background: var(--gold); color: var(--bg); }
-  .btn.danger { color: #e07070; border-color: #5a2020; }
-  .btn.danger:hover { background: #3a1010; color: #f09090; }
-  .btn.small { padding: 4px 8px; font-size: 11px; }
 
-  /* LAYOUT */
-  .app { display: flex; height: calc(100vh - 64px); }
+  .btn i { font-size: 0.9rem; opacity: 0.8; }
+  .btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    border-color: var(--border-medium);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
 
-  /* SIDEBAR */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+    color: var(--bg-primary);
+    border: none;
+    font-weight: 600;
+    box-shadow: var(--shadow-gold);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--gold-primary), var(--gold-light));
+    color: var(--bg-primary);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+  }
+
+  .btn-danger {
+    color: #e07070;
+    border-color: rgba(224, 112, 112, 0.2);
+  }
+
+  .btn-danger:hover {
+    background: rgba(224, 112, 112, 0.1);
+    color: #f09090;
+    border-color: rgba(224, 112, 112, 0.4);
+  }
+
+  .btn-icon {
+    padding: 8px 12px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* Main Layout */
+  .app-container {
+    display: flex;
+    height: calc(100vh - 72px);
+    position: relative;
+  }
+
+  /* Enhanced Sidebar */
   .sidebar {
-    width: 300px;
-    min-width: 260px;
-    background: var(--bg2);
-    border-right: 1px solid var(--border);
+    width: 320px;
+    min-width: 320px;
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    border-right: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: all 0.25s;
+    transition: all var(--transition-smooth);
+    position: relative;
+    z-index: 50;
   }
-  .sidebar.collapsed { width: 0; min-width: 0; opacity: 0; }
+
+  .sidebar.collapsed {
+    width: 0;
+    min-width: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+
   .sidebar-header {
-    padding: 1.25rem 1.25rem 0.75rem;
-    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 1.25rem 1rem;
+    border-bottom: 1px solid var(--border-subtle);
   }
+
   .sidebar-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    color: var(--gold);
-    font-weight: 400;
-    margin-bottom: 10px;
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--gold-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-  .search-box {
+
+  .search-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .search-wrapper i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .search-input {
     width: 100%;
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 8px 12px;
-    color: var(--text);
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 10px 12px 10px 38px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: var(--font-sans);
     outline: none;
-    margin-bottom: 8px;
+    transition: all var(--transition-fast);
   }
-  .search-box::placeholder { color: var(--text3); }
-  .search-box:focus { border-color: var(--gold3); }
+
+  .search-input:focus {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 0 3px var(--gold-soft);
+  }
+
   .filter-group {
     display: flex;
     gap: 8px;
-    margin-top: 8px;
   }
+
   .filter-select {
     flex: 1;
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    border-radius: 6px;
-    padding: 6px 8px;
-    color: var(--text2);
-    font-size: 11px;
-    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 7px 8px;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-family: var(--font-sans);
     outline: none;
+    cursor: pointer;
   }
-  .member-list { flex: 1; overflow-y: auto; padding: 0.75rem; }
-  .member-list::-webkit-scrollbar { width: 4px; }
-  .member-list::-webkit-scrollbar-track { background: transparent; }
-  .member-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-  .member-item {
+
+  /* Member List */
+  .member-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.75rem;
+  }
+
+  .member-card {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 9px 10px;
-    border-radius: 8px;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 4px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: background 0.15s;
+    transition: all var(--transition-fast);
     border: 1px solid transparent;
+    background: transparent;
   }
-  .member-item:hover { background: var(--bg3); }
-  .member-item.active { background: var(--bg3); border-color: var(--gold3); }
+
+  .member-card:hover {
+    background: var(--bg-card);
+    border-color: var(--border-subtle);
+    transform: translateX(2px);
+  }
+
+  .member-card.active {
+    background: linear-gradient(90deg, var(--gold-soft), transparent);
+    border-color: var(--border-medium);
+  }
+
   .member-avatar {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
     flex-shrink: 0;
+    position: relative;
+    box-shadow: var(--shadow-sm);
   }
-  .member-avatar.male { background: var(--male); color: var(--male2); }
-  .member-avatar.female { background: var(--female); color: var(--female2); }
-  .member-avatar.unknown { background: var(--unknown); color: var(--text3); }
-  .member-info { flex: 1; min-width: 0; }
-  .member-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .member-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
-  .stats-bar {
-    padding: 0.75rem 1.25rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .stat { text-align: center; }
-  .stat-val { font-size: 1.1rem; font-weight: 500; color: var(--gold); font-family: 'Playfair Display', serif; }
-  .stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
 
-  /* TREE CANVAS */
-  .tree-area {
+  .member-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    opacity: 0.3;
+  }
+
+  .member-avatar.male {
+    background: linear-gradient(135deg, var(--male-color), color-mix(in srgb, var(--male-color) 70%, white));
+    color: white;
+  }
+
+  .member-avatar.female {
+    background: linear-gradient(135deg, var(--female-color), color-mix(in srgb, var(--female-color) 70%, white));
+    color: white;
+  }
+
+  .member-avatar.unknown {
+    background: linear-gradient(135deg, var(--unknown-color), color-mix(in srgb, var(--unknown-color) 70%, white));
+    color: white;
+  }
+
+  .member-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .member-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .member-meta {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .deceased-badge {
+    color: var(--text-muted);
+    font-size: 0.65rem;
+  }
+
+  /* Stats Bar */
+  .stats-container {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border-subtle);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background: linear-gradient(0deg, var(--bg-secondary) 0%, transparent 100%);
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--gold-primary);
+    font-family: var(--font-serif);
+    line-height: 1.2;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Tree Canvas Area */
+  .canvas-container {
     flex: 1;
     position: relative;
     overflow: hidden;
-    background: var(--bg);
-    background-image:
-      radial-gradient(circle at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(201,168,76,0.03) 0%, transparent 50%);
+    background: var(--bg-primary);
+    background-image: 
+      radial-gradient(circle at 15% 25%, rgba(212, 175, 55, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(212, 175, 55, 0.02) 0%, transparent 50%),
+      repeating-linear-gradient(45deg, var(--border-subtle) 0px, var(--border-subtle) 1px, transparent 1px, transparent 30px);
   }
-  .tree-controls {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    z-index: 10;
-  }
-  .tree-hint {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 12px;
-    color: var(--text3);
-    pointer-events: none;
-    text-align: center;
-    background: rgba(15,14,12,0.7);
-    padding: 6px 16px;
-    border-radius: 20px;
-    backdrop-filter: blur(4px);
-    white-space: nowrap;
-  }
+
   #treeCanvas {
     width: 100%;
     height: 100%;
     cursor: grab;
+    transition: cursor 0.1s;
   }
-  #treeCanvas.dragging { cursor: grabbing; }
-  #treeCanvas.empty-state {
+
+  #treeCanvas.dragging {
+    cursor: grabbing;
+  }
+
+  /* Floating Controls */
+  .canvas-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 30;
+  }
+
+  .control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    gap: 16px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    backdrop-filter: blur(10px);
+    font-size: 1.1rem;
   }
-  .empty-msg {
+
+  .control-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--gold-primary);
+    border-color: var(--border-medium);
+    transform: scale(1.05);
+  }
+
+  /* Empty State */
+  .empty-state {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
     pointer-events: none;
+    z-index: 20;
   }
-  .empty-msg .icon { font-size: 4rem; margin-bottom: 16px; color: var(--gold3); }
-  .empty-msg h3 { font-family: 'Playfair Display', serif; color: var(--gold); font-weight: 400; font-size: 1.5rem; margin-bottom: 8px; }
-  .empty-msg p { color: var(--text3); font-size: 14px; line-height: 1.6; }
 
-  /* MODAL */
+  .empty-state-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  }
+
+  .empty-state h2 {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--gold-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* Detail Panel - Refined */
+  .detail-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 340px;
+    max-width: calc(100vw - 40px);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 40;
+    display: none;
+    backdrop-filter: blur(20px);
+    animation: slideIn 0.25s ease-out;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .detail-panel.visible { display: block; }
+
+  .detail-header {
+    padding: 1.25rem;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-subtle);
+    background: linear-gradient(180deg, var(--gold-soft), transparent);
+  }
+
+  .detail-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+  }
+
+  .detail-title {
+    flex: 1;
+  }
+
+  .detail-name {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .detail-subtitle {
+    font-size: 0.8rem;
+    color: var(--gold-primary);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .detail-content {
+    padding: 1.25rem;
+    max-height: 350px;
+    overflow-y: auto;
+  }
+
+  .detail-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+  }
+
+  .field-label {
+    color: var(--text-muted);
+    min-width: 90px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.65rem;
+    font-weight: 500;
+  }
+
+  .field-value {
+    color: var(--text-secondary);
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+  }
+
+  .detail-actions {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Modal - Modern */
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(10, 9, 8, 0.9);
     z-index: 200;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.2s ease-out;
   }
+
   .modal-overlay.hidden { display: none; }
-  .modal {
-    background: var(--card);
-    border: 1px solid var(--border2);
-    border-radius: 14px;
-    width: 100%;
-    max-width: 540px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow);
-    animation: modalSlideIn 0.2s ease-out;
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
-  @keyframes modalSlideIn {
-    from { opacity: 0; transform: translateY(-10px); }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-lg);
+    animation: modalSlideUp 0.25s ease-out;
+  }
+
+  @keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
   .modal-header {
-    padding: 1.25rem 1.5rem 1rem;
-    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid var(--border-subtle);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: linear-gradient(180deg, var(--gold-soft), transparent);
   }
+
   .modal-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
-    font-weight: 400;
-    color: var(--gold);
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--gold-primary);
   }
+
   .modal-close {
     background: none;
     border: none;
-    color: var(--text3);
+    color: var(--text-muted);
     font-size: 1.5rem;
     cursor: pointer;
+    padding: 4px 8px;
+    transition: color var(--transition-fast);
     line-height: 1;
-    padding: 2px 6px;
-    transition: color 0.15s;
   }
-  .modal-close:hover { color: var(--text); }
-  .modal-body { padding: 1.5rem; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-  .form-row.single { grid-template-columns: 1fr; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group label { font-size: 11px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
-  .form-control {
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 9px 12px;
-    color: var(--text);
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    outline: none;
-    transition: border-color 0.15s;
-    width: 100%;
+
+  .modal-close:hover { color: var(--text-primary); }
+
+  .modal-body {
+    padding: 1.75rem;
+    overflow-y: auto;
   }
-  .form-control:focus { border-color: var(--gold3); }
-  .form-control option { background: var(--bg2); }
-  .form-divider {
-    font-size: 11px;
-    color: var(--text3);
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-field.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-field label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    margin: 1.25rem 0 0.75rem;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
   }
+
+  .form-control {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: var(--font-sans);
+    outline: none;
+    transition: all var(--transition-fast);
+    width: 100%;
+  }
+
+  .form-control:focus {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 0 3px var(--gold-soft);
+  }
+
+  .form-control option {
+    background: var(--bg-tertiary);
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .form-divider {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 1.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
   .modal-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--border);
+    padding: 1rem 1.75rem;
+    border-top: 1px solid var(--border-subtle);
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+    background: var(--bg-tertiary);
   }
 
-  /* DETAIL PANEL */
-  .detail-panel {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    width: 300px;
-    background: var(--card);
-    border: 1px solid var(--border2);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    z-index: 50;
-    display: none;
-    animation: panelSlideIn 0.2s ease-out;
-  }
-  @keyframes panelSlideIn {
-    from { opacity: 0; transform: translateX(-10px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  .detail-panel.visible { display: block; }
-  .detail-top {
-    padding: 1.25rem;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    border-bottom: 1px solid var(--border);
-  }
-  .detail-avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: 500;
-    flex-shrink: 0;
-  }
-  .detail-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text); font-weight: 600; line-height: 1.2; }
-  .detail-role { font-size: 12px; color: var(--gold); margin-top: 3px; }
-  .detail-body { padding: 1rem 1.25rem; max-height: 300px; overflow-y: auto; }
-  .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; }
-  .detail-row .lbl { color: var(--text3); min-width: 80px; }
-  .detail-row .val { color: var(--text2); text-align: right; max-width: 60%; word-break: break-word; }
-  .detail-actions { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border); display: flex; gap: 6px; flex-wrap: wrap; }
-
-  /* NODE TOOLTIP */
-  .node-tooltip {
-    position: absolute;
-    pointer-events: none;
-    background: var(--card);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 12px;
-    color: var(--text);
-    z-index: 30;
-    display: none;
-    box-shadow: var(--shadow);
-    white-space: nowrap;
-  }
-
-  /* TOAST */
-  .toast {
+  /* Toast Notification */
+  .toast-container {
     position: fixed;
     bottom: 24px;
     right: 24px;
-    background: var(--bg2);
-    border: 1px solid var(--gold3);
-    border-radius: 10px;
-    padding: 12px 20px;
-    font-size: 13px;
-    color: var(--gold2);
     z-index: 999;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.25s;
-    pointer-events: none;
-    box-shadow: var(--shadow);
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-
-  /* LEGEND */
-  .legend {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 11px;
-    color: var(--text3);
-    z-index: 10;
-  }
-  .legend-title { color: var(--text2); font-weight: 500; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
-  .legend-row { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
-  /* RESPONSIVE */
-  @media (max-width: 768px) {
-    header { padding: 0 1rem; }
-    .logo span { display: none; }
-    .header-actions { gap: 5px; }
-    .btn { padding: 5px 10px; font-size: 11px; }
-    .sidebar { position: absolute; left: 0; top: 64px; bottom: 0; z-index: 60; }
-    .sidebar.collapsed { transform: translateX(-100%); width: 300px; min-width: 300px; opacity: 1; }
-    .form-row { grid-template-columns: 1fr; }
-    .detail-panel { width: 260px; }
-    .tree-hint { font-size: 10px; padding: 4px 12px; }
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  /* IMPORT DRAG AREA */
-  .import-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15,14,12,0.95);
-    z-index: 300;
+  .toast {
+    background: var(--bg-card);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    padding: 14px 20px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(20px);
     display: flex;
     align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(8px);
+    gap: 12px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all var(--transition-smooth);
+    pointer-events: none;
   }
-  .import-overlay.hidden { display: none; }
-  .import-area {
-    border: 2px dashed var(--gold3);
-    border-radius: 20px;
-    padding: 3rem;
-    text-align: center;
-    color: var(--text2);
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(0);
   }
-  .import-area.drag-over { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+
+  .toast i {
+    color: var(--gold-primary);
+    font-size: 1.1rem;
+  }
+
+  /* Tooltip */
+  .node-tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    z-index: 35;
+    display: none;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    white-space: nowrap;
+  }
+
+  /* Legend */
+  .legend-panel {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    z-index: 30;
+    backdrop-filter: blur(10px);
+  }
+
+  .legend-title {
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-line {
+    width: 20px;
+    height: 3px;
+    background: var(--gold-primary);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* Hint Bar */
+  .hint-bar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    z-index: 25;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    white-space: nowrap;
+  }
+
+  .hint-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hint-item i {
+    color: var(--gold-primary);
+    font-size: 0.8rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .app-header {
+      padding: 0 1rem;
+      height: 60px;
+    }
+
+    .logo-text {
+      font-size: 1.2rem;
+    }
+
+    .logo-subtext {
+      display: none;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+    }
+
+    .header-actions {
+      gap: 6px;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      font-size: 0.7rem;
+    }
+
+    .btn span {
+      display: none;
+    }
+
+    .btn i {
+      margin: 0;
+    }
+
+    .sidebar {
+      position: absolute;
+      left: 0;
+      top: 60px;
+      bottom: 0;
+      width: 300px;
+      z-index: 60;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar.collapsed {
+      transform: translateX(-100%);
+      width: 300px;
+      min-width: 300px;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .detail-panel {
+      width: calc(100vw - 32px);
+      max-height: 70vh;
+    }
+
+    .hint-bar {
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px 16px;
+      font-size: 0.65rem;
+    }
+
+    .hint-item span {
+      display: none;
+    }
+
+    .legend-panel {
+      display: none;
+    }
+
+    .canvas-controls {
+      top: 12px;
+      right: 12px;
+    }
+
+    .control-btn {
+      width: 36px;
+      height: 36px;
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .btn-primary span {
+      display: inline;
+    }
+
+    .stats-container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .modal-body {
+      padding: 1.25rem;
+    }
+
+    .modal-header {
+      padding: 1.25rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.25rem;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .app-header, .sidebar, .canvas-controls, .hint-bar, .legend-panel, .detail-panel {
+      display: none !important;
+    }
+
+    .canvas-container {
+      background: white;
+    }
+
+    #treeCanvas {
+      background: white;
+    }
+
+    .tree-node rect {
+      fill: white !important;
+      stroke: #333 !important;
+    }
+
+    .tree-node text {
+      fill: #333 !important;
+    }
+  }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="logo">
-    <span class="logo-icon">🌳</span>
+<!-- Enhanced Header -->
+<header class="app-header">
+  <div class="logo-wrapper">
+    <div class="logo-icon">🌳</div>
     <div>
-      Family Heritage
-      <span>Your Living Chronicle</span>
+      <div class="logo-text">Family Heritage</div>
+      <div class="logo-subtext">Legacy & Lineage</div>
     </div>
   </div>
+  
   <div class="header-actions">
-    <button class="btn" id="toggleSidebar" title="Toggle member list">☰ Members</button>
-    <button class="btn" id="centerBtn" title="Center tree">⊙ Centre</button>
-    <button class="btn primary" id="addRootBtn" title="Add new family member">+ Add</button>
-    <button class="btn" id="exportBtn" title="Export tree data">↓ Export</button>
-    <button class="btn" id="importBtn" title="Import tree data">↑ Import</button>
-    <button class="btn" id="loadSampleBtn" title="Load sample family">📋 Sample</button>
+    <button class="btn" id="toggleSidebar" title="Toggle member list">
+      <i class="fas fa-users"></i>
+      <span>Members</span>
+    </button>
+    <button class="btn" id="centerBtn" title="Center tree view">
+      <i class="fas fa-crosshairs"></i>
+      <span>Center</span>
+    </button>
+    <button class="btn btn-primary" id="addRootBtn" title="Add new family member">
+      <i class="fas fa-plus-circle"></i>
+      <span>Add Member</span>
+    </button>
+    <button class="btn" id="exportBtn" title="Export tree data">
+      <i class="fas fa-download"></i>
+      <span>Export</span>
+    </button>
+    <button class="btn" id="importBtn" title="Import tree data">
+      <i class="fas fa-upload"></i>
+      <span>Import</span>
+    </button>
+    <button class="btn" id="loadSampleBtn" title="Load sample family">
+      <i class="fas fa-tree"></i>
+      <span>Sample</span>
+    </button>
   </div>
 </header>
 
-<div class="app">
-  <!-- SIDEBAR -->
+<!-- Main App Container -->
+<div class="app-container">
+  <!-- Enhanced Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <h2>Family Members</h2>
-      <input type="text" class="search-box" id="searchBox" placeholder="Search by name…">
+      <h2>
+        <i class="fas fa-users" style="font-size: 1rem;"></i>
+        Family Members
+      </h2>
+      <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" class="search-input" id="searchBox" placeholder="Search by name...">
+      </div>
       <div class="filter-group">
         <select class="filter-select" id="filterGender">
           <option value="all">All Genders</option>
@@ -522,279 +1089,72 @@
         </select>
       </div>
     </div>
+    
     <div class="member-list" id="memberList"></div>
-    <div class="stats-bar" id="statsBar">
-      <div class="stat"><div class="stat-val" id="statTotal">0</div><div class="stat-label">Total</div></div>
-      <div class="stat"><div class="stat-val" id="statGen">0</div><div class="stat-label">Generations</div></div>
-      <div class="stat"><div class="stat-val" id="statMale">0</div><div class="stat-label">Male</div></div>
-      <div class="stat"><div class="stat-val" id="statFemale">0</div><div class="stat-label">Female</div></div>
+    
+    <div class="stats-container" id="statsBar">
+      <div class="stat-item">
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statGen">0</div>
+        <div class="stat-label">Generations</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statMale">0</div>
+        <div class="stat-label">Male</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statFemale">0</div>
+        <div class="stat-label">Female</div>
+      </div>
     </div>
   </aside>
 
-  <!-- TREE CANVAS -->
-  <div class="tree-area">
-    <div id="emptyState" class="empty-msg">
-      <div class="icon">🌳</div>
-      <h3>Your Family Tree Awaits</h3>
-      <p>Click <strong style="color:var(--gold)">+ Add</strong> to begin your journey,<br>or load the sample to explore.</p>
+  <!-- Canvas Area -->
+  <div class="canvas-container">
+    <div id="emptyState" class="empty-state">
+      <div class="empty-state-icon">🌳</div>
+      <h2>Begin Your Legacy</h2>
+      <p>Click <strong style="color: var(--gold-primary);">Add Member</strong> to start building your family tree,<br>or load the sample to explore the experience.</p>
     </div>
+    
     <svg id="treeCanvas"></svg>
-    <div class="tree-controls">
-      <button class="btn" id="zoomIn" title="Zoom in (or scroll)">+</button>
-      <button class="btn" id="zoomOut" title="Zoom out (or scroll)">−</button>
-      <button class="btn" id="resetView" title="Reset view">⟲</button>
+    
+    <!-- Floating Controls -->
+    <div class="canvas-controls">
+      <button class="control-btn" id="zoomIn" title="Zoom In">
+        <i class="fas fa-plus"></i>
+      </button>
+      <button class="control-btn" id="zoomOut" title="Zoom Out">
+        <i class="fas fa-minus"></i>
+      </button>
+      <button class="control-btn" id="resetView" title="Reset View">
+        <i class="fas fa-sync-alt"></i>
+      </button>
     </div>
-    <div class="tree-hint" id="treeHint">
-      <span>🖱️ Scroll to zoom · Drag to pan · Click node for details</span>
-      <span style="margin-left:12px">⌘N new member · ESC close</span>
-    </div>
-    <div class="legend">
-      <div class="legend-title">Legend</div>
-      <div class="legend-row"><div class="legend-dot" style="background:#3a5a8a"></div>Male</div>
-      <div class="legend-row"><div class="legend-dot" style="background:#8a3a5a"></div>Female</div>
-      <div class="legend-row"><div class="legend-dot" style="background:#4a4a3a"></div>Other</div>
-      <div class="legend-row"><div class="legend-dot" style="background:#c9a84c; border-radius:2px; width:18px; height:3px;"></div>Marriage</div>
-    </div>
-  </div>
-</div>
-
-<!-- DETAIL PANEL -->
-<div class="detail-panel" id="detailPanel">
-  <div class="detail-top">
-    <div class="detail-avatar" id="dAvatar"></div>
-    <div>
-      <div class="detail-name" id="dName"></div>
-      <div class="detail-role" id="dRole"></div>
-    </div>
-  </div>
-  <div class="detail-body" id="dBody"></div>
-  <div class="detail-actions">
-    <button class="btn small" id="dEdit">✎ Edit</button>
-    <button class="btn small primary" id="dAddChild">+ Child</button>
-    <button class="btn small primary" id="dAddSpouse">+ Spouse</button>
-    <button class="btn small danger" id="dDelete">✕ Delete</button>
-  </div>
-</div>
-
-<!-- TOOLTIP -->
-<div class="node-tooltip" id="tooltip"></div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<!-- IMPORT OVERLAY -->
-<div class="import-overlay hidden" id="importOverlay">
-  <div class="import-area" id="importArea">
-    <div style="font-size:3rem;margin-bottom:1rem">📁</div>
-    <h3 style="color:var(--gold);margin-bottom:0.5rem;font-family:'Playfair Display',serif">Import Family Tree</h3>
-    <p style="color:var(--text3);margin-bottom:1.5rem">Drag & drop a JSON file or click to browse</p>
-    <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
-    <button class="btn primary" id="browseBtn">Choose File</button>
-    <button class="btn" id="cancelImport" style="margin-left:10px">Cancel</button>
-  </div>
-</div>
-
-<!-- ADD/EDIT MODAL -->
-<div class="modal-overlay hidden" id="memberModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 id="modalTitle">Add Family Member</h2>
-      <button class="modal-close" id="closeModal">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>First Name *</label>
-          <input type="text" class="form-control" id="fFirstName" placeholder="e.g. John" autocomplete="off">
-        </div>
-        <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" class="form-control" id="fLastName" placeholder="e.g. Mashozhera" autocomplete="off">
-        </div>
+    
+    <!-- Hint Bar -->
+    <div class="hint-bar">
+      <div class="hint-item">
+        <i class="fas fa-mouse"></i>
+        <span>Scroll to zoom</span>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Gender</label>
-          <select class="form-control" id="fGender">
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="unknown">Prefer not to say</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Birth Year</label>
-          <input type="number" class="form-control" id="fBirth" placeholder="e.g. 1950" min="1700" max="2030">
-        </div>
+      <div class="hint-item">
+        <i class="fas fa-hand-pointer"></i>
+        <span>Drag to pan</span>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Death Year</label>
-          <input type="number" class="form-control" id="fDeath" placeholder="Leave blank if living" min="1700" max="2030">
-        </div>
-        <div class="form-group">
-          <label>Place of Birth</label>
-          <input type="text" class="form-control" id="fBirthplace" placeholder="e.g. Harare, Zimbabwe">
-        </div>
+      <div class="hint-item">
+        <i class="fas fa-mouse-pointer"></i>
+        <span>Click node for details</span>
       </div>
-      <div class="form-row single">
-        <div class="form-group">
-          <label>Occupation / Role</label>
-          <input type="text" class="form-control" id="fOccupation" placeholder="e.g. Farmer, Teacher, Engineer">
-        </div>
-      </div>
-      <div class="form-row single">
-        <div class="form-group">
-          <label>Notes / Story</label>
-          <textarea class="form-control" id="fNotes" rows="3" placeholder="Share memories, achievements, or family stories…" style="resize:vertical"></textarea>
-        </div>
-      </div>
-      <div id="relationSection">
-        <div class="form-divider">Relationship</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Relationship Type</label>
-            <select class="form-control" id="fRelType">
-              <option value="child">Child of</option>
-              <option value="spouse">Spouse of</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Related To</label>
-            <select class="form-control" id="fRelTarget"></select>
-          </div>
-        </div>
+      <div class="hint-item">
+        <i class="fas fa-keyboard"></i>
+        <span>⌘N new • ESC close</span>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn" id="cancelModal">Cancel</button>
-      <button class="btn primary" id="saveMember">Save Member</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ─── STATE ──────────────────────────────────────────────────────────────────
-let members = JSON.parse(localStorage.getItem('familyTreeMembers') || '[]');
-let relations = JSON.parse(localStorage.getItem('familyTreeRelations') || '[]');
-let selectedId = null;
-let modalMode = 'add';
-let editingId = null;
-let pendingRelType = null;
-let pendingRelTarget = null;
-
-// Pan/Zoom
-let svgPan = { x: 0, y: 0 };
-let svgScale = 1;
-let isPanning = false;
-let panStart = { x: 0, y: 0 };
-let panOrigin = { x: 0, y: 0 };
-
-// ─── UTILS ───────────────────────────────────────────────────────────────────
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 9); }
-function save() {
-  localStorage.setItem('familyTreeMembers', JSON.stringify(members));
-  localStorage.setItem('familyTreeRelations', JSON.stringify(relations));
-}
-function initials(m) {
-  return ((m.firstName||'?')[0] + (m.lastName||'')[0] || '').toUpperCase() || '?';
-}
-function fullName(m) { return [m.firstName, m.lastName].filter(Boolean).join(' ') || 'Unnamed'; }
-function lifespan(m) {
-  if (m.birthYear && m.deathYear) return `${m.birthYear} – ${m.deathYear}`;
-  if (m.birthYear) return `b. ${m.birthYear}`;
-  if (m.deathYear) return `d. ${m.deathYear}`;
-  return '';
-}
-function isDeceased(m) { return !!m.deathYear; }
-function genderColor(g) {
-  if (g === 'male') return '#3a5a8a';
-  if (g === 'female') return '#8a3a5a';
-  return '#4a4a3a';
-}
-function genderColorLight(g) {
-  if (g === 'male') return '#5a7aaa';
-  if (g === 'female') return '#aa5a7a';
-  return '#7a7a6a';
-}
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-// ─── TREE LAYOUT ─────────────────────────────────────────────────────────────
-const NODE_W = 140, NODE_H = 72, H_GAP = 50, V_GAP = 90;
-
-function buildTree() {
-  const childIds = new Set(relations.filter(r=>r.type==='child').map(r=>r.childId));
-  const roots = members.filter(m => !childIds.has(m.id));
-
-  const childrenOf = {};
-  const spousesOf = {};
-  members.forEach(m => { childrenOf[m.id] = []; spousesOf[m.id] = []; });
-  relations.forEach(r => {
-    if (r.type === 'child') {
-      if (childrenOf[r.parentId]) childrenOf[r.parentId].push(r.childId);
-    }
-    if (r.type === 'spouse') {
-      if (spousesOf[r.id1]) spousesOf[r.id1].push(r.id2);
-      if (spousesOf[r.id2]) spousesOf[r.id2].push(r.id1);
-    }
-  });
-
-  const pos = {};
-  const visited = new Set();
-
-  function layout(id, depth, x) {
-    if (visited.has(id)) return x;
-    visited.add(id);
-    const children = childrenOf[id] || [];
-    const spouses = (spousesOf[id] || []).filter(sid => !visited.has(sid));
-
-    let myX = x;
-    if (children.length === 0 && spouses.length === 0) {
-      pos[id] = { x: myX, y: depth * (NODE_H + V_GAP) };
-      return myX + NODE_W + H_GAP;
-    }
-
-    let childX = x;
-    let allChildren = [...children];
-    spouses.forEach(sid => {
-      visited.add(sid);
-      const spouseChildren = (childrenOf[sid] || []).filter(c => !allChildren.includes(c));
-      allChildren = [...allChildren, ...spouseChildren];
-    });
-
-    if (allChildren.length > 0) {
-      allChildren.forEach(cid => {
-        childX = layout(cid, depth + 1, childX);
-      });
-      const childPositions = allChildren.map(c => pos[c]?.x).filter(x=>x!==undefined);
-      if (childPositions.length > 0) {
-        myX = (Math.min(...childPositions) + Math.max(...childPositions)) / 2;
-      }
-    } else {
-      myX = x;
-      childX = x + NODE_W + H_GAP;
-    }
-
-    pos[id] = { x: myX, y: depth * (NODE_H + V_GAP) };
-
-    spouses.forEach((sid, i) => {
-      pos[sid] = { x: myX + (NODE_W + H_GAP) * (i + 1), y: depth * (NODE_H + V_GAP) };
-    });
-
-    return Math.max(childX, myX + (spouses.length + 1) * (NODE_W + H_GAP));
-  }
-
-  let startX = 40;
-  roots.forEach(r => {
-    startX = layout(r.id, 0, startX);
-    startX += H_GAP;
-  });
-
-  members.forEach(m => {
-    if (!pos[m.id]) {
-      pos[m.id] = { x: startX, y: 0 };
-      startX += NODE_W
+    
+    <!-- Legend -->
+    <div class="legend-panel">
+      <div class="
